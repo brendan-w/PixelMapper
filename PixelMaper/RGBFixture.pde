@@ -15,15 +15,16 @@ public class RGBFixture extends Fixture
   public void compute()
   {
     //do video reading and channel setting here
-    c = video.pixels[rect.y*width+rect.x];
+    c = video.pixels[rect.y * width + rect.x];
 
     //set channel values (GRB because the LED chips are like that)
-    channels[1] = ((c >> 16) & 0xFF);  //Red
+    channels[1] = ((c >> 16) & 0xFF); //Red
     channels[0] = ((c >> 8) & 0xFF);  //Green
-    channels[2] =(c & 0xFF);  //Blue
+    channels[2] = (c & 0xFF);         //Blue
 
     //draw locator
-    if (overlays) {
+    if(overlays)
+    {
       noStroke();
       //fill(channels[0],channels[1],channels[2]);
       fill(255-channels[0], 255-channels[1], 255-channels[2]);

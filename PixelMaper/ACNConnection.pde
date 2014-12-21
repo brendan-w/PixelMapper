@@ -48,14 +48,16 @@ public class ACNConnection
     DMX = new int[512*universeTotal];
     universes = new ArrayList<UDP>();
 
-    for (int u = 1; u < _universeTotal+1; u++)
+    for(int u = 1; u < _universeTotal + 1; u++)
     {
-      UDP udp = new UDP( this, 5568, "239.255.0."+u );
+      UDP udp = new UDP(this, 5568, "239.255.0." + u);
       universes.add(udp);
     }
 
-    data = new byte[512+header.length];
+    data = new byte[512 + header.length];
   }
+
+
   //commits a given fixture's values to the output buffer
   //ensures that fixtures can't set data on arbitrary channels
   public void commit(Fixture fixture)
@@ -63,7 +65,7 @@ public class ACNConnection
     int address    = fixture.getAddress();
     int[] channels = fixture.getChannels();
 
-    for (int c = 0; c < channels.length; c++) //haha
+    for(int c = 0; c < channels.length; c++)
     {
       DMX[c + address] = channels[c];
     }
@@ -72,30 +74,25 @@ public class ACNConnection
 
   public void send()
   {
-    // bit-cannon here
-
-
-    //iter through all universes
-    for (int s = 0; s < universes.size (); s++)
+    //iterate through all universes
+    for(int s = 0; s < universes.size (); s++)
     {
-      if (count >= 255) {  
+      if(count >= 255)
         count = 0;
-      }
-      //set packet number
-      header[111] = byte(count);
-      //set universe number
-      header[114] = byte(s+1);
+
+      header[111] = byte(count); //set packet number
+      header[114] = byte(s+1);   //set universe number
+
       //copy over dmx channels for this niverse
       for (int i = 0; i < data.length; ++i)
       {
-        int channelToGet = i+(512*s);
+        int channelToGet = i + (512 * s);
         data[i] = i < header.length ? header[i] : byte(DMX[channelToGet - header.length]);
       }
 
       UDP udp = universes.get(s);
-      udp.send( data );
-      count ++;
+      udp.send(data);
+      count++;
     }
   }
 }
-

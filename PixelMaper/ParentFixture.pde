@@ -21,9 +21,9 @@ public abstract class ParentFixture extends Fixture
   //compute the children, and merge child DMX values into parent DMX values
   public void compute()
   {
-    for (Fixture f : children)
+    for(Fixture f : children)
     {
-      if (f != null)
+      if(f != null)
       {
         f.compute();
 
@@ -31,13 +31,15 @@ public abstract class ParentFixture extends Fixture
         int[] f_channels = f.getChannels();
 
         //addresses are stored as relative offsets from the parent
-        for (int c = 0; c < f_channels.length; c++)
+        for(int c = 0; c < f_channels.length; c++)
         {
           channels[c + f_address] = f_channels[c];
         }
       }
     }
-    if (overlays) {
+    
+    if(overlays)
+    {
       noFill();
       stroke(128, 255, 0);
       rect(rect.x-5, rect.y-5, rect.width+10, rect.height+10);
