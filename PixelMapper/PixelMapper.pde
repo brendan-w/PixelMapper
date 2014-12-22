@@ -4,13 +4,13 @@ import java.awt.Rectangle;
 import java.awt.Point;
 import processing.video.*;
 import hypermedia.net.*;
-import codeanticode.syphon.*;
 
 
 public PImage video;
-public SyphonClient syphon;
 public ACNConnection acn;
 public ArrayList<Fixture> fixtures;
+public Insets insets; // Frame caption and borders for resizing
+public Spout spout;
 
 public boolean overlays = true;
 public int[] res = { 100, 100 };
@@ -18,12 +18,10 @@ public int[] res = { 100, 100 };
 
 public void setup()
 {
-  size(res[0], res[1], P3D);
+  size(res[0], res[1], P2D);
   colorMode(RGB, 255);
   background(0);
   frameRate(60);
-  //syphon = new SyphonClient(this, "Arena", "Composition");
-  syphon = new SyphonClient(this);
 
   acn = new ACNConnection(5);  //number of universes to make
   fixtures = new ArrayList<Fixture>();
@@ -67,19 +65,24 @@ public void setup()
          bar = new RGBBar(4, 212, new Rectangle(75, 12, 0, 69), 70);  fixtures.add(bar);
          bar = new RGBBar(5, 1,   new Rectangle(85, 12, 0, 69), 70);  fixtures.add(bar);
          bar = new RGBBar(5, 212, new Rectangle(95, 12, 0, 69), 70);  fixtures.add(bar);
-        
+
+
+
+  // Create an image to receive the data.
+  video = createImage(width, height, ARGB);
+
+  // create and init spout
+  spout = new Spout();
+  spout.initReceiver("", video);
 }
 
 
 public void draw()
 {
-  //render the current frame of the video
-  if(syphon.available())
-  {
-    video = syphon.getImage(video); // load the pixels array with the updated image info (slow)
-    if(overlays)
-      image(video, 0, 0);
-  }
+  video = spout.receiveTexture(video);
+
+  if(overlays)
+    image(video, 0, 0);
 
   //compute DMX
   for (Fixture f : fixtures)
@@ -90,3 +93,9 @@ public void draw()
 
   acn.send();
 }
+
+public void exit()
+{
+  spout.closeReceiver();
+  super.exit();
+} 
